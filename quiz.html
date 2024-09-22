@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zerodha Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            display: none;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="welcome-page">
+        <h1>Welcome to the Zerodha Quiz</h1>
+        <p>Zerodha is India's largest stock brokerage firm offering retail brokerage services. Founded in 2010, Zerodha pioneered the discount brokerage model, and today serves millions of clients by enabling investments in equity, commodities, and mutual funds at extremely low costs.</p>
+        <button onclick="showInstructions()">Start Quiz</button>
+    </div>
+
+    <div id="instructions-page" class="hidden">
+        <h2>Instructions</h2>
+        <ul>
+            <li>Total of 5 questions.</li>
+            <li>Each question has four options, and only one is correct.</li>
+            <li>Answer each question in less than or equal to 1 minute.</li>
+            <li>Each correct answer gives you 5 rupees.</li>
+        </ul>
+        <button onclick="startQuiz()">Proceed to Quiz</button>
+    </div>
+
+    <div id="quiz-page" class="hidden">
+        <h2>Question <span id="question-number">1</span></h2>
+        <p id="question-text"></p>
+        <div id="options">
+            <!-- Options will be generated dynamically -->
+        </div>
+        <button onclick="submitAnswer()">Submit</button>
+        <div id="feedback" class="result"></div>
+    </div>
+
+    <div id="end-page" class="hidden">
+        <h2>Thank you for taking the quiz!</h2>
+        <p>You won a total of <span id="total-winnings">0</span> rupees.</p>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            text: "What is Zerodha primarily known for?",
+            options: ["Retail banking", "Discount brokerage", "Insurance services", "Credit cards"],
+            correct: 1
+        },
+        {
+            text: "When was Zerodha founded?",
+            options: ["2005", "2010", "2015", "2020"],
+            correct: 1
+        },
+        {
+            text: "What does Zerodha primarily help investors trade in?",
+            options: ["Cryptocurrencies", "Commodities, Equity, and Mutual funds", "Real Estate", "Precious Metals"],
+            correct: 1
+        },
+        {
+            text: "Which of the following is a product offered by Zerodha?",
+            options: ["Google Pay", "Kite", "Bharat Bill Pay", "PhonePe"],
+            correct: 1
+        },
+        {
+            text: "Zerodha is headquartered in which city?",
+            options: ["Mumbai", "Bangalore", "Delhi", "Hyderabad"],
+            correct: 1
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let totalWinnings = 0;
+
+    function showInstructions() {
+        document.getElementById("welcome-page").classList.add("hidden");
+        document.getElementById("instructions-page").classList.remove("hidden");
+    }
+
+    function startQuiz() {
+        document.getElementById("instructions-page").classList.add("hidden");
+        document.getElementById("quiz-page").classList.remove("hidden");
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const question = questions[currentQuestionIndex];
+        document.getElementById("question-number").innerText = currentQuestionIndex + 1;
+        document.getElementById("question-text").innerText = question.text;
+
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = '';
+
+        question.options.forEach((option, index) => {
+            const optionElem = document.createElement("div");
+            optionElem.innerHTML = `<input type="radio" name="option" value="${index}" id="option${index}">
+                                    <label for="option${index}">${option}</label>`;
+            optionsDiv.appendChild(optionElem);
+        });
+    }
+
+    function submitAnswer() {
+        const selectedOption = document.querySelector('input[name="option"]:checked');
+        if (!selectedOption) {
+            alert("Please select an option!");
+            return;
+        }
+
+        const userAnswer = parseInt(selectedOption.value);
+        const correctAnswer = questions[currentQuestionIndex].correct;
+
+        const feedbackDiv = document.getElementById("feedback");
+        if (userAnswer === correctAnswer) {
+            feedbackDiv.innerText = "Correct! You've won 5 rupees.";
+            feedbackDiv.classList.add("correct");
+            feedbackDiv.classList.remove("incorrect");
+            totalWinnings += 5;
+        } else {
+            feedbackDiv.innerText = `Incorrect! The correct answer was: ${questions[currentQuestionIndex].options[correctAnswer]}.`;
+            feedbackDiv.classList.add("incorrect");
+            feedbackDiv.classList.remove("correct");
+        }
+
+        setTimeout(() => {
+            feedbackDiv.innerText = "";
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }, 2000);
+    }
+
+    function endQuiz() {
+        document.getElementById("quiz-page").classList.add("hidden");
+        document.getElementById("end-page").classList.remove("hidden");
+        document.getElementById("total-winnings").innerText = totalWinnings;
+    }
+</script>
+
+</body>
+</html>
